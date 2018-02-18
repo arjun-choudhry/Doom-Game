@@ -18,4 +18,11 @@ class PreprocessImage(ObservationWrapper):
         n_colors = 1 if self.grayscale else 3
         self.observation_space = Box(0.0, 1.0, [n_colors, height, width])
 
-
+    def _observation(self, img):
+        img = self.crop(img)
+        img = imresize(img, self.img_size)
+        if self.grayscale:
+            img = img.mean(-1, keepdims = True)
+        img = np.transpose(img, (2, 0, 1))
+        img = img.astype('float32') / 255.
+        return img
